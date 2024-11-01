@@ -25,6 +25,13 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    dnf -y remove firewalld
    dnf install -y iptables iptables-services
 
-3. **Install Additional Tools**
+3. **Install Wireguard and Additional Tools**
     ```bash
-    dnf install -y rsyslog htop make gcc libtool libyaml-devel openssl-devel wget mlocate tcpdump ethtool psmisc vim net-tools iptables iptables-services bind-utils nmap tar telnet
+    dnf install -y rsyslog htop make gcc libtool libyaml-devel openssl-devel wget mlocate tcpdump ethtool psmisc vim net-tools bind-utils nmap tar telnet wireguard-tools
+
+4. **Generate WireGuard Keys**
+   ```bash
+   cd /etc/wireguard
+   umask 077
+   wg genkey | tee server_privatekey | wg pubkey > server_publickey
+   wg genkey | tee client_privatekey | wg pubkey > client_publickey
