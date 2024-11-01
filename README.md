@@ -56,7 +56,7 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
 
 ### Configure the WireGuard Client
 
-1. **Client config file
+1. **Client config file**
    On the client device or server or whatever device that has cli, create the following WireGuard configuration (e.g., wg0-client.conf):
    ```bash
    [Interface]
