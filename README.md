@@ -71,3 +71,43 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    AllowedIPs = 0.0.0.0/0, ::/0                  # Routes all traffic through VPN
    PersistentKeepalive = 25                      # Keeps the connection alive (useful for mobile)
 
+2. **Edit sysctl.conf file***
+   
+   Edit sysctl.conf and add the Following for Forwarding and Additional Network Tuning for Higher Performance if Supported
+   ```bash
+   # Prime directive
+   net.ipv4.ip_forward = 1
+   # Increase the maximum amount of memory for socket buffers
+   net.core.rmem_max = 16777216
+   net.core.wmem_max = 16777216
+   net.core.rmem_default = 262144
+   net.core.wmem_default = 262144
+
+   # Increase the maximum number of packets in the backlog
+   net.core.netdev_max_backlog = 50000
+
+   # Enable TCP window scaling (needed for high-speed links)
+   net.ipv4.tcp_window_scaling = 1
+
+   # Increase maximum buffer space for TCP
+   net.ipv4.tcp_rmem = 4096 87380 16777216
+   net.ipv4.tcp_wmem = 4096 65536 16777216
+
+   # Reduce TCP SYN retries (faster failover in case of connection issues)
+   net.ipv4.tcp_syn_retries = 2
+   net.ipv4.tcp_synack_retries = 2
+
+   # Enable BBR congestion control for better high-speed performance
+   net.core.default_qdisc = fq
+   net.ipv4.tcp_congestion_control = bbr
+
+   # Increase allowed local port range
+   net.ipv4.ip_local_port_range = 1024 65535
+
+   # Reduce TIME_WAIT for faster socket recycling
+   net.ipv4.tcp_fin_timeout = 15
+
+Apply the changes:
+    ```bash
+    sudo sysctl -p
+
