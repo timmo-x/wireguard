@@ -14,7 +14,7 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
 
 ---
 
-### System Preparation
+### System Preparation - Server Side!
 
 1. **Disable SELinux**
    ```bash
@@ -51,3 +51,22 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
 6. **Ensure restricted permissions on the config file:**
    ```bash
    chmod 600 /etc/wireguard/wg0.conf
+
+---
+
+### Configure the WireGuard Client
+
+1. **Client config file
+   On the client device or server or whatever device that has cli, create the following WireGuard configuration (e.g., wg0-client.conf):
+   ```bash
+   [Interface]
+   PrivateKey = <contents of client_privatekey>  # Client's private key
+   Address = 10.0.0.2/24                         # Client's VPN IP
+   DNS = 10.24.32.1                              # Internal DNS server
+
+   [Peer]
+   PublicKey = <contents of server_publickey>    # Server's public key
+   Endpoint = yourdomain.com:51820               # Server's IP and WireGuard port
+   AllowedIPs = 0.0.0.0/0, ::/0                  # Routes all traffic through VPN
+   PersistentKeepalive = 25                      # Keeps the connection alive (useful for mobile)
+
