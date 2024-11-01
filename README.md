@@ -106,9 +106,8 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
 
    # Reduce TIME_WAIT for faster socket recycling
    net.ipv4.tcp_fin_timeout = 15
-\
 
-   Apply the changes:
+3. **Apply the changes:***
    ```bash
    sudo sysctl -p
 
