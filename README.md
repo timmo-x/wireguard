@@ -19,6 +19,7 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
 1. **Disable SELinux**
    ```bash
    sudo sed -i 's/enforcing/disabled/g' /etc/selinux/config
-   
-sudo dnf -y remove firewalld
-sudo dnf install -y iptables iptables-services
+   sudo dnf -y remove firewalld
+   sudo dnf install -y iptables iptables-services
+   sudo dnf -y remove firewalld
+   sudo dnf install -y iptables iptables-services
