@@ -48,6 +48,6 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    PublicKey = <contents of client_publickey>    # Client's public key
    AllowedIPs = 10.0.0.2/32                      # IP assigned to the client
    
-Ensure restricted permissions on the config file:
+6. **Ensure restricted permissions on the config file:***
    ```bash
    chmod 600 /etc/wireguard/wg0.conf
