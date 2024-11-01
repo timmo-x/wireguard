@@ -35,3 +35,19 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    umask 077
    wg genkey | tee server_privatekey | wg pubkey > server_publickey
    wg genkey | tee client_privatekey | wg pubkey > client_publickey
+
+5. **Configure the WireGuard Server**
+   ```bash
+   [Interface]
+   Address = 10.0.0.1/24                     # VPN subnet for the server
+   ListenPort = 51820                        # Port WireGuard listens on
+   PrivateKey = <contents of server_privatekey>  # Server's private key
+
+   # Client configuration on the server side
+   [Peer]
+   PublicKey = <contents of client_publickey>    # Client's public key
+   AllowedIPs = 10.0.0.2/32                      # IP assigned to the client
+   
+Ensure restricted permissions on the config file:
+   ```bash
+   chmod 600 /etc/wireguard/wg0.conf
