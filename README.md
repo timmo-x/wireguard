@@ -1,6 +1,6 @@
 # WireGuard VPN Setup on Fedora Server (Lab Environment)
 
-This guide covers the steps to set up a WireGuard VPN server on a Fedora Server VM, configured with custom settings like disabling `SELinux`, using `iptables`, and adding essential network and monitoring tools. iptables and disabling of selinux is for lab testing, this is a fully working setup but recommended to use SELinux with firewalld instead.
+This guide covers the steps to set up a WireGuard VPN server on a Fedora Server VM, configured with custom settings like disabling `SELinux`, using `iptables`, and adding essential network and monitoring tools. iptables and the disabling of selinux is for my lab testing, this is a fully working setup but recommended to use SELinux with firewalld instead. Be sure to change DNS server for client config
 
 ---
 
@@ -10,14 +10,16 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    ```bash
    sed -i 's/enforcing/disabled/g' /etc/selinux/config
 
-2. **Remove firewalld and Install iptables**
+2. **Update, Remove firewalld and Install iptables**
     ```bash
+   dnf -y update
    dnf -y remove firewalld
    dnf install -y iptables iptables-services
 
 3. **Install Wireguard and Additional Tools**
     ```bash
     dnf install -y rsyslog htop make gcc libtool libyaml-devel openssl-devel wget mlocate tcpdump ethtool psmisc vim net-tools bind-utils nmap tar telnet wireguard-tools
+    reboot
 
 4. **Generate WireGuard Keys**
    ```bash
@@ -26,32 +28,31 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    wg genkey | tee server_privatekey | wg pubkey > server_publickey
    wg genkey | tee client_privatekey | wg pubkey > client_publickey
 
-5. **Configure the WireGuard Server**
+5. **Configure the WireGuard Server: wg0.conf**
    ```bash
    [Interface]
-   Address = 10.0.0.1/24                     # VPN subnet for the server
-   ListenPort = 51820                        # Port WireGuard listens on
-   PrivateKey = <contents of server_privatekey>  # Server's private key
+   Address = 10.0.0.1/24
+   ListenPort = 51820
+   PrivateKey = <contents of server_privatekey>
 
-   # Client configuration on the server side
    [Peer]
-   PublicKey = <contents of client_publickey>    # Client's public key
-   AllowedIPs = 10.0.0.2/32                      # IP assigned to the client
+   PublicKey = <contents of client_publickey>
+   AllowedIPs = 10.0.0.2/32
    
 6. **Client config file**
    
    On the client device or server or whatever that has cli, create the following WireGuard configuration (e.g., wg0-client.conf):
    ```bash
    [Interface]
-   PrivateKey = <contents of client_privatekey>  # Client's private key
-   Address = 10.0.0.2/24                         # Client's VPN IP
-   DNS = 10.24.32.1                              # Internal DNS server
+   PrivateKey = <contents of client_privatekey>
+   Address = 10.0.0.2/24
+   DNS = 10.24.32.1
 
    [Peer]
-   PublicKey = <contents of server_publickey>    # Server's public key
-   Endpoint = yourdomain.com:51820               # Server's IP and WireGuard port
-   AllowedIPs = 0.0.0.0/0, ::/0                  # Routes all traffic through VPN
-   PersistentKeepalive = 25                      # Keeps the connection alive (useful for mobile)
+   PublicKey = <contents of server_publickey>
+   Endpoint = yourdomain.com:51820
+   AllowedIPs = 0.0.0.0/0, ::/0
+   PersistentKeepalive = 25
 
 7. **Edit sysctl.conf file Server Side**
    
@@ -88,18 +89,24 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
 
    # Reduce TIME_WAIT for faster socket recycling
    net.ipv4.tcp_fin_timeout = 15
+   
+   # Increase the maximum number of file descriptors to support high network load
+   # and allow more simultaneous connections and open files.
+   fs.file-max = 100000
 
 8. **Apply the changes:**
    ```bash
    sudo sysctl -p
+   echo '* soft nofile 51200
+   * hard nofile 51200'>> /etc/security/limits.conf
 
 9. **Enable NAT with iptables:**
    
     Flush existing rules and set up NAT on the public interface:
     ```bash
-    sudo iptables -F
-    sudo iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE
-    sudo service iptables save
+    iptables -F
+    iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE
+    service iptables save
 
 10. **Enable and Start WireGuard**
     ```bash
