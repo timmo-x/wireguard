@@ -67,7 +67,7 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    AllowedIPs = 0.0.0.0/0, ::/0                  # Routes all traffic through VPN
    PersistentKeepalive = 25                      # Keeps the connection alive (useful for mobile)
 
-8. **Edit sysctl.conf file***
+8. **Edit sysctl.conf file**
    
    Edit sysctl.conf and add the Following for Forwarding and Additional Network Tuning for Higher Performance if Supported
    ```bash
