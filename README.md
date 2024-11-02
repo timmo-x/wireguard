@@ -28,7 +28,9 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    wg genkey | tee server_privatekey | wg pubkey > server_publickey
    wg genkey | tee client_privatekey | wg pubkey > client_publickey
 
-5. **Configure the WireGuard Server: wg0.conf**
+5. **Configure the WireGuard Server**
+
+   On the server, open /etc/wireguard/wg0.conf with your favorite text editor and paste the following content, adding the keys you just made:
    ```bash
    [Interface]
    Address = 10.0.0.1/24
@@ -39,9 +41,9 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    PublicKey = <contents of client_publickey>
    AllowedIPs = 10.0.0.2/32
    
-6. **Client config file**
+7. **Client config file**
    
-   On the client device or server or whatever that has cli, create the following WireGuard configuration (e.g., wg0-client.conf):
+   On the client device or server or whatever that has cli, create the following WireGuard configuration (e.g., wg0-client.conf), add the keys, change the DNS and your endpoint address:
    ```bash
    [Interface]
    PrivateKey = <contents of client_privatekey>
@@ -54,7 +56,7 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    AllowedIPs = 0.0.0.0/0, ::/0
    PersistentKeepalive = 25
 
-7. **Edit sysctl.conf file Server Side**
+8. **Edit sysctl.conf file Server Side**
    
    Edit sysctl.conf and add the Following for Forwarding and Additional Network Tuning for Higher Performance if Supported
    ```bash
@@ -94,13 +96,13 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    # and allow more simultaneous connections and open files.
    fs.file-max = 100000
 
-8. **Apply the changes:**
+9. **Apply the changes:**
    ```bash
    sudo sysctl -p
    echo '* soft nofile 51200
    * hard nofile 51200'>> /etc/security/limits.conf
 
-9. **Enable NAT with iptables:**
+10. **Enable NAT with iptables:**
    
     Flush existing rules and set up NAT on the public interface:
     ```bash
@@ -108,7 +110,7 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
     iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE
     service iptables save
 
-10. **Enable and Start WireGuard**
+11. **Enable and Start WireGuard**
     ```bash
     systemctl enable wg-quick@wg0
     systemctl start wg-quick@wg0
