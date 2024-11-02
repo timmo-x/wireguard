@@ -103,17 +103,19 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    # Reduce TIME_WAIT for faster socket recycling
    net.ipv4.tcp_fin_timeout = 15
 
-9. **Apply the changes:***
+9. **Apply the changes:**
    ```bash
    sudo sysctl -p
 
-10. **Enable NAT with iptables: Flush existing rules and set up NAT on the public interface:**
+10. **Enable NAT with iptables:**
+   
+    Flush existing rules and set up NAT on the public interface:
     ```bash
     sudo iptables -F
     sudo iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE
     sudo service iptables save
 
-11. **Enable and Start WireGuard**
+13. **Enable and Start WireGuard**
     ```bash
     systemctl enable wg-quick@wg0
     systemctl start wg-quick@wg0
