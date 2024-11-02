@@ -52,13 +52,9 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    ```bash
    chmod 600 /etc/wireguard/wg0.conf
 
----
-
-### Configure the WireGuard Client
-
-1. **Client config file**
+7. **Client config file**
    
-   On the client device or server or whatever device that has cli, create the following WireGuard configuration (e.g., wg0-client.conf):
+   On the client device or server or whatever that has cli, create the following WireGuard configuration (e.g., wg0-client.conf):
    ```bash
    [Interface]
    PrivateKey = <contents of client_privatekey>  # Client's private key
@@ -71,7 +67,7 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    AllowedIPs = 0.0.0.0/0, ::/0                  # Routes all traffic through VPN
    PersistentKeepalive = 25                      # Keeps the connection alive (useful for mobile)
 
-2. **Edit sysctl.conf file***
+8. **Edit sysctl.conf file***
    
    Edit sysctl.conf and add the Following for Forwarding and Additional Network Tuning for Higher Performance if Supported
    ```bash
@@ -107,7 +103,18 @@ This guide covers the steps to set up a WireGuard VPN server on a Fedora Server 
    # Reduce TIME_WAIT for faster socket recycling
    net.ipv4.tcp_fin_timeout = 15
 
-3. **Apply the changes:***
+9. **Apply the changes:***
    ```bash
    sudo sysctl -p
 
+10. **Enable NAT with iptables: Flush existing rules and set up NAT on the public interface:**
+    ```bash
+    sudo iptables -F
+    sudo iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE
+    sudo service iptables save
+
+11. **Enable and Start WireGuard**
+    ```bash
+    systemctl enable wg-quick@wg0
+    systemctl start wg-quick@wg0
+    systemctl status wg-quick@wg0
