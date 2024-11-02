@@ -1,6 +1,6 @@
 # WireGuard VPN Setup on Fedora Server (Lab Environment)
 
-This guide covers the steps to set up a WireGuard VPN server on a Fedora Server VM, configured with custom settings like disabling SELinux, using `iptables`, and adding essential network and monitoring tools. iptables and disabling of selinux is for lab testing, this is a fully working setup but recommended to use SELinux with firewalld instead.
+This guide covers the steps to set up a WireGuard VPN server on a Fedora Server VM, configured with custom settings like disabling `SELinux`, using `iptables`, and adding essential network and monitoring tools. iptables and disabling of selinux is for lab testing, this is a fully working setup but recommended to use SELinux with firewalld instead.
 
 ---
 
